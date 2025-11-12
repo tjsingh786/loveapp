@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕 Our Match - Bumble Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #FED766;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phone {
+            width: 420px;
+            height: 860px;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 12px solid #000;
+            position: relative;
+        }
+
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .notch-space {
+            height: 35px;
+        }
+
+        .app {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            overflow: hidden;
+        }
+
+        .header {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .bumble-logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: #FED766;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 0 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: #333;
+            border-bottom-color: #333;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tab-view {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .tab-view.active {
+            display: flex;
+        }
+
+        .discover-view {
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-stack {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            perspective: 1000px;
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            cursor: grab;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:nth-child(1) {
+            z-index: 10;
+            transform: translateY(0) scale(1);
+        }
+
+        .card:nth-child(2) {
+            z-index: 9;
+            transform: translateY(8px) scale(0.98);
+            opacity: 0.8;
+        }
+
+        .card:nth-child(3) {
+            z-index: 8;
+            transform: translateY(16px) scale(0.96);
+            opacity: 0.6;
+        }
+
+        .card.swiped-left {
+            animation: swipeLeft 0.5s ease-out forwards;
+        }
+
+        .card.swiped-right {
+            animation: swipeRight 0.5s ease-out forwards;
+        }
+
+        @keyframes swipeLeft {
+            to {
+                transform: translateX(-120%) rotate(-15deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes swipeRight {
+            to {
+                transform: translateX(120%) rotate(15deg);
+                opacity: 0;
+            }
+        }
+
+        .card-image {
+            flex: 1;
+            width: 100%;
+            object-fit: cover;
+            background: linear-gradient(135deg, #FED766 0%, #FFE966 100%);
+        }
+
+        .card-info {
+            padding: 16px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-text h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-text p {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .card-badge {
+            width: 44px;
+            height: 44px;
+            background: #FED766;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .action-area {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .pass-btn {
+            background: #f5f5f5;
+        }
+
+        .like-btn {
+            width: 60px;
+            height: 60px;
+            background: #FED766;
+            box-shadow: 0 6px 16px rgba(254, 215, 102, 0.4);
+            color: white;
+        }
+
+        .chats-view {
+            padding: 12px 0;
+        }
+
+        .chat-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .chat-item:hover {
+            background: #fafafa;
+        }
+
+        .chat-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FED766 0%, #FFE966 100%);
+        }
+
+        .chat-info {
+            flex: 1;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .chat-preview {
+            font-size: 13px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .chat-detail {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 200;
+            flex-direction: column;
+        }
+
+        .chat-detail.active {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 12px 16px;
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .message.own {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .message.other .message-bubble {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .message.own .message-bubble {
+            background: #FED766;
+            color: #333;
+        }
+
+        .message-input-area {
+            padding: 12px 16px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .message-input {
+            flex: 1;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 10px 14px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .send-btn {
+            background: #FED766;
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .profile-view {
+            padding: 20px 16px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .profile-card {
+            background: #fff8e6;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #ffe8a8;
+        }
+
+        .profile-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .profile-card p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .swipe-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 24px 32px;
+            border-radius: 12px;
+            z-index: 300;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .swipe-popup.hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <div class="notch-space"></div>
+        <div class="app">
+            <div class="header">
+                <div class="bumble-logo">bumble</div>
+                <div class="header-icons">
+                    <button class="header-icon">🔔</button>
+                    <button class="header-icon">⚙️</button>
+                </div>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('discover', this)">Discover</button>
+                <button class="tab-btn" onclick="switchTab('chats', this)">Chats</button>
+                <button class="tab-btn" onclick="switchTab('profile', this)">Profile</button>
+            </div>
+
+            <div class="content">
+                <div class="tab-view active" id="discover-tab">
+                    <div class="discover-view">
+                        <div class="card-stack" id="cardStack"></div>
+                    </div>
+                    <div class="action-area">
+                        <button class="action-btn pass-btn" onclick="passCard()">✕</button>
+                        <button class="action-btn like-btn" onclick="likeCard()">❤️</button>
+                    </div>
+                </div>
+
+                <div class="tab-view" id="chats-tab">
+                    <div class="chats-view" id="chatsList"></div>
+                </div>
+
+                <div class="tab-view" id="profile-tab">
+                    <div class="profile-view">
+                        <div class="profile-header">
+                            <h2>💍 Our Story</h2>
+                        </div>
+                        <div class="profile-card">
+                            <h3>About Us</h3>
+                            <p>A custom love app built with passion for the one I love.</p>
+                        </div>
+                        <div class="profile-card">
+                            <h3>Our Match</h3>
+                            <p>💯% Compatible - Made for each other</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-detail" id="chatDetail">
+        <div class="chat-header">
+            <button class="chat-back-btn" onclick="closeChatDetail()">←</button>
+            <div id="chatTitle"></div>
+        </div>
+        <div class="messages" id="messagesContainer"></div>
+        <div class="message-input-area">
+            <input type="text" class="message-input" placeholder="Type a message...">
+            <button class="send-btn">↑</button>
+        </div>
+    </div>
+
+    <div class="swipe-popup hide" id="swipePopup"></div>
+
+    <script>
+        let profiles = <%- JSON.stringify(profiles) %>;
+        let chats = <%- JSON.stringify(chats) %>;
+        let currentIndex = 0;
+
+        function renderCards() {
+            const container = document.getElementById('cardStack');
+            container.innerHTML = '';
+
+            if (currentIndex >= profiles.length) {
+                container.innerHTML = '<div style="text-align:center;color:#999">🎉 All done!</div>';
+                return;
+            }
+
+            for (let i = 0; i < Math.min(3, profiles.length - currentIndex); i++) {
+                const profile = profiles[currentIndex + i];
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${profile.image}" alt="${profile.name}" class="card-image">
+                    <div class="card-info">
+                        <div class="card-text">
+                            <h3>${profile.name}, ${profile.age}</h3>
+                            <p>Soul Mate</p>
+                        </div>
+                        <div class="card-badge">💕</div>
+                    </div>
+                `;
+
+                if (i === 0) setupCardDrag(card);
+                container.appendChild(card);
+            }
+        }
+
+        function setupCardDrag(card) {
+            let startX = 0, currentX = 0, isDragging = false;
+
+            const start = (e) => {
+                isDragging = true;
+                startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            };
+
+            const move = (e) => {
+                if (!isDragging) return;
+                const x = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                currentX = x - startX;
+                card.style.transform = `translateX(${currentX}px) rotate(${(currentX / window.innerWidth) * 15}deg)`;
+            };
+
+            const end = () => {
+                isDragging = false;
+                if (Math.abs(currentX) > window.innerWidth * 0.25) {
+                    currentX > 0 ? likeCard() : passCard();
+                } else {
+                    card.style.transform = '';
+                }
+            };
+
+            card.addEventListener('mousedown', start);
+            card.addEventListener('touchstart', start);
+            document.addEventListener('mousemove', move);
+            document.addEventListener('touchmove', move);
+            document.addEventListener('mouseup', end);
+            document.addEventListener('touchend', end);
+        }
+
+        function passCard() {
+            document.getElementById('swipePopup').textContent = 'Too late now, fiancé! 💔';
+            document.getElementById('swipePopup').classList.remove('hide');
+            setTimeout(() => document.getElementById('swipePopup').classList.add('hide'), 1200);
+            swipeCard('left');
+        }
+
+        function likeCard() {
+            document.getElementById('swipePopup').textContent = 'Matched! 💕';
+            document.getElementById('swipePopup').classList.remove('hide');
+            setTimeout(() => document.getElementById('swipePopup').classList.add('hide'), 1200);
+            swipeCard('right');
+        }
+
+        function swipeCard(direction) {
+            const card = document.querySelector('.card');
+            if (!card) return;
+            card.classList.add(direction === 'left' ? 'swiped-left' : 'swiped-right');
+            setTimeout(() => {
+                currentIndex++;
+                renderCards();
+            }, 500);
+        }
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (tab === 'chats') {
+                const list = document.getElementById('chatsList');
+                list.innerHTML = chats.map(chat => `
+                    <div class="chat-item" onclick="openChat(${chat.id})">
+                        <div class="chat-avatar"></div>
+                        <div class="chat-info">
+                            <div class="chat-name">${chat.name}</div>
+                            <div class="chat-preview">${chat.lastMessage}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function openChat(id) {
+            const chat = chats.find(c => c.id === id);
+            if (!chat) return;
+
+            document.getElementById('chatTitle').textContent = chat.name;
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = chat.messages.map(msg => `
+                <div class="message ${msg.sender === 'you' ? 'own' : 'other'}">
+                    <div class="message-bubble">${msg.text}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('chatDetail').classList.add('active');
+        }
+
+        function closeChatDetail() {
+            document.getElementById('chatDetail').classList.remove('active');
+        }
+
+        renderCards();
+    </script>
+</body>
+</html>

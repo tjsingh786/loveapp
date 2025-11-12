@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bumble - Our Love Story</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #FED766;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .phone {
+            width: 100%;
+            aspect-ratio: 9/19.5;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 12px solid #000;
+            position: relative;
+        }
+
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 28px;
+            background: #000;
+            border-radius: 0 0 30px 30px;
+            z-index: 50;
+        }
+
+        .notch-space { height: 40px; }
+
+        .app {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            overflow: hidden;
+        }
+
+        .header {
+            background: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bumble-logo {
+            font-size: 20px;
+            font-weight: 900;
+            color: #FED766;
+            letter-spacing: -1px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .discover-view {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-stack {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            max-width: 360px;
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-radius: 20px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            cursor: grab;
+            touch-action: none;
+            transition: transform 0.1s;
+        }
+
+        .card.swiped-left {
+            animation: swipeLeft 0.6s ease-out forwards;
+        }
+
+        .card.swiped-right {
+            animation: swipeRight 0.6s ease-out forwards;
+        }
+
+        @keyframes swipeLeft {
+            to {
+                transform: translateX(-500px) rotate(-30deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes swipeRight {
+            to {
+                transform: translateX(500px) rotate(30deg);
+                opacity: 0;
+            }
+        }
+
+        .card-image-section {
+            position: relative;
+            flex: 1;
+            width: 100%;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: linear-gradient(135deg, #FED766 0%, #FFE966 100%);
+        }
+
+        .card-badges {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge {
+            width: 24px;
+            height: 24px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .verified-badge {
+            background: linear-gradient(135deg, #1e90ff 0%, #00bfff 100%);
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.8));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 16px;
+        }
+
+        .card-name-tag {
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .card-meta {
+            color: rgba(255,255,255,0.9);
+            font-size: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .card-details {
+            padding: 16px;
+            background: white;
+            flex: 0 0 auto;
+            overflow-y: auto;
+            max-height: 100px;
+        }
+
+        .card-bio {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .card-interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .interest-tag {
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .action-area {
+            padding: 16px;
+            background: white;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .action-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .pass-btn {
+            background: white;
+            color: #ccc;
+        }
+
+        .like-btn {
+            width: 64px;
+            height: 64px;
+            background: #FED766;
+            box-shadow: 0 8px 20px rgba(254, 215, 102, 0.5);
+            font-size: 28px;
+            color: white;
+        }
+
+        .chats-view {
+            display: none;
+            flex-direction: column;
+            background: #f5f5f5;
+        }
+
+        .chats-view.active {
+            display: flex;
+        }
+
+        .chats-list {
+            list-style: none;
+            padding: 12px 0;
+        }
+
+        .chat-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+            background: white;
+            margin: 8px 8px;
+            border-radius: 12px;
+        }
+
+        .chat-item:hover {
+            background: #fafafa;
+        }
+
+        .chat-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FED766 0%, #FFE966 100%);
+            flex-shrink: 0;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .chat-preview {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chat-detail {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 200;
+            flex-direction: column;
+        }
+
+        .chat-detail.active {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 12px 16px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .chat-header-title {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 12px;
+            animation: msgSlide 0.3s ease-out;
+        }
+
+        @keyframes msgSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.own {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .message.other .message-bubble {
+            background: #e5e5ea;
+            color: #333;
+        }
+
+        .message.own .message-bubble {
+            background: #FED766;
+            color: #333;
+        }
+
+        .message-bubble.proposal {
+            background: linear-gradient(135deg, #FF1493 0%, #FFB6C1 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            animation: heartBeat 0.6s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .message-input-area {
+            padding: 12px 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .message-input {
+            flex: 1;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 10px 14px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .send-btn {
+            background: #FED766;
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon.active {
+            color: #FED766;
+        }
+
+        .swipe-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 20px 28px;
+            border-radius: 12px;
+            z-index: 300;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .swipe-popup.hide {
+            display: none;
+        }
+
+        .profile-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .profile-view.active {
+            display: flex;
+        }
+
+        .story-locked {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .lock-icon {
+            font-size: 60px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .story-unlocked {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            text-align: center;
+            align-items: center;
+        }
+
+        .story-unlocked.active {
+            display: flex;
+        }
+
+        .story-photo {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #FF1493 0%, #FFB6C1 100%);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .story-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .story-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .story-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+        }
+
+        .message-animation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .animated-messages {
+            width: 90%;
+            height: 150px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+
+        .animated-messages-scroll {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            animation: scrollMessages 3s ease-in forwards;
+        }
+
+        @keyframes scrollMessages {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+            70% {
+                transform: translateY(-150px);
+                opacity: 0.5;
+                filter: blur(3px);
+            }
+            100% {
+                transform: translateY(-150px);
+                opacity: 0;
+                filter: blur(5px);
+            }
+        }
+
+        .sample-message {
+            padding: 8px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        .sample-message.own {
+            background: #FED766;
+            color: #333;
+            margin-left: 40px;
+        }
+
+        .sample-message.other {
+            background: #e5e5ea;
+            color: #333;
+            margin-right: 40px;
+        }
+
+        .no-more-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-wrapper">
+        <div class="phone">
+            <div class="notch-space"></div>
+            <div class="app">
+                <div class="header">
+                    <div class="header-left">
+                        <div class="menu-icon">≡</div>
+                        <div>
+                            <span class="bumble-logo">bumble</span>
+                            <span class="spark">⚡</span>
+                        </div>
+                    </div>
+                    <div class="header-icons">
+                        <button class="header-icon">🔔</button>
+                        <button class="header-icon" onclick="logout()">⚙️</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="discover-view" id="discoverView">
+                        <div class="card-stack" id="cardStack"></div>
+                    </div>
+
+                    <div class="chats-view" id="chatsView">
+                        <ul class="chats-list" id="chatsList"></ul>
+                    </div>
+
+                    <div class="profile-view" id="profileView">
+                        <div class="story-locked" id="storyLocked">
+                            <div class="lock-icon">🔒</div>
+                            <div>Unlock our story...</div>
+                            <div style="font-size: 12px; color: #999;">Get to know each other better</div>
+                        </div>
+
+                        <div class="story-unlocked" id="storyUnlocked">
+                            <div class="story-photo">
+                                <img src="/img/5.jpeg" alt="Our Story">
+                            </div>
+                            <div class="story-title">Our Beautiful Journey ✨</div>
+                            <div class="story-text">
+                                This all started with a simple swipe and has blossomed into something truly magical. Every conversation brought us closer, every laugh made our bond stronger. 
+                                <br><br>
+                                You make every moment special. Your smile brightens my darkest days. In these chats, I've found not just a match, but my soulmate. You're my forever. 💕
+                                <br><br>
+                                Here's to our story - past, present, and all the beautiful moments yet to come. You are my greatest adventure. 💍
+                                <br><br>
+                                I LOVE YOU JAHNAVI. 
+                                <br><br>
+                                when i say i can even pluck stars for you i meant it, yeh to sirf ek app hai huhh.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-area" id="actionArea">
+                        <button class="action-btn pass-btn" onclick="passCard()">✕</button>
+                        <button class="action-btn like-btn" onclick="likeCard()">❤️</button>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-icon active" onclick="switchNav('discover')">👤</div>
+                    <div class="nav-icon" onclick="switchNav('chats')">💬</div>
+                    <div class="nav-icon" onclick="switchNav('profile')">❤️</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-detail" id="chatDetail">
+        <div class="chat-header">
+            <button class="chat-back-btn" onclick="closeChatDetail()">←</button>
+            <div class="chat-header-title" id="chatTitle"></div>
+        </div>
+        <div class="messages" id="messagesContainer"></div>
+        <div class="message-input-area">
+            <input type="text" class="message-input" id="chatInput" placeholder="Type a message...">
+            <button class="send-btn" onclick="sendMessage()">↑</button>
+        </div>
+    </div>
+
+    <div class="swipe-popup hide" id="swipePopup"></div>
+
+    <script>
+        if (!localStorage.getItem('bumbleUser')) {
+            window.location.href = '/login';
+        }
+
+        let profiles = <%- JSON.stringify(profiles) %>;
+        let currentIndex = 0;
+        let singleMatch = null;
+        let currentChatId = null;
+        let proposalSent = false;
+        let storyUnlocked = localStorage.getItem('storyUnlocked') === 'true';
+
+        const sampleMessages = [
+            { sender: 'other', text: 'Hey! 😊' },
+            { sender: 'own', text: 'Hi! How are you?' },
+            { sender: 'other', text: 'I\'m doing great! 💕' },
+            { sender: 'own', text: 'Tell me about yourself' },
+            { sender: 'other', text: 'I love traveling and good conversations' },
+            { sender: 'own', text: 'Me too! That\'s amazing' },
+            { sender: 'other', text: 'We have so much in common 😄' },
+            { sender: 'own', text: 'I know right! Can\'t stop smiling' }
+        ];
+
+        function logout() {
+            localStorage.removeItem('bumbleUser');
+            localStorage.removeItem('singleMatch');
+            localStorage.removeItem('storyUnlocked');
+            window.location.href = '/login';
+        }
+
+        function renderCard() {
+            const stack = document.getElementById('cardStack');
+            stack.innerHTML = '';
+
+            if (currentIndex >= profiles.length) {
+                stack.innerHTML = '<div class="no-more-message"><div style="font-size:32px;margin-bottom:12px">💕</div><div>It\'s too late now 😢</div></div>';
+                return;
+            }
+
+            const profile = profiles[currentIndex];
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.id = 'mainCard';
+            card.innerHTML = `
+                <div class="card-image-section">
+                    <img src="${profile.image}" alt="${profile.name}" class="card-image">
+                    <div class="card-badges">
+                        <div class="badge verified-badge">✓</div>
+                    </div>
+                    <div class="card-overlay">
+                        <div class="card-name-tag">${profile.name}, ${profile.age}</div>
+                        <div class="card-meta">
+                            <span>📍 Your City</span>
+                            <span>✓ Verified</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <div class="card-bio">${profile.bio}</div>
+                    <div class="card-interests">
+                        <span class="interest-tag">❤️ Love</span>
+                        <span class="interest-tag">💑 Us</span>
+                        <span class="interest-tag">✨ Forever</span>
+                    </div>
+                </div>
+            `;
+
+            stack.appendChild(card);
+            setupCardDrag(card);
+        }
+
+        function setupCardDrag(card) {
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+
+            card.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+            });
+
+            card.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                currentX = e.clientX - startX;
+                const angle = (currentX / window.innerWidth) * 20;
+                card.style.transform = `translateX(${currentX}px) rotate(${angle}deg)`;
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX - startX;
+                const angle = (currentX / window.innerWidth) * 20;
+                card.style.transform = `translateX(${currentX}px) rotate(${angle}deg)`;
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                if (Math.abs(currentX) > 100) {
+                    if (currentX > 0) likeCard();
+                    else passCard();
+                } else {
+                    card.style.transform = '';
+                }
+            });
+
+            document.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                if (Math.abs(currentX) > 100) {
+                    if (currentX > 0) likeCard();
+                    else passCard();
+                } else {
+                    card.style.transform = '';
+                }
+            });
+        }
+
+        function passCard() {
+            const card = document.getElementById('mainCard');
+            if (!card) return;
+            card.classList.add('swiped-left');
+            setTimeout(() => {
+                currentIndex++;
+                renderCard();
+            }, 600);
+        }
+
+        function likeCard() {
+            const card = document.getElementById('mainCard');
+            if (!card) return;
+            
+            if (!singleMatch) {
+                const profile = profiles[currentIndex];
+                singleMatch = {
+                    id: 1,
+                    name: 'Tajinder',
+                    lastMessage: 'Say hi!',
+                    timestamp: 'Now',
+                    messages: []
+                };
+                localStorage.setItem('singleMatch', JSON.stringify(singleMatch));
+                currentChatId = singleMatch.id;
+            }
+            
+            document.getElementById('swipePopup').textContent = 'IT\'S A MATCH! 💛';
+            document.getElementById('swipePopup').classList.remove('hide');
+            
+            card.classList.add('swiped-right');
+            setTimeout(() => {
+                document.getElementById('swipePopup').classList.add('hide');
+                currentIndex++;
+                renderCard();
+                renderChats();
+            }, 1200);
+        }
+
+        function renderChats() {
+            const list = document.getElementById('chatsList');
+            if (!singleMatch) {
+                list.innerHTML = '<li style="text-align:center;padding:20px;color:#999">No matches yet 💔</li>';
+                return;
+            }
+
+            list.innerHTML = `
+                <li class="chat-item" onclick="openChat(${singleMatch.id})">
+                    <div class="chat-avatar"></div>
+                    <div class="chat-info">
+                        <div class="chat-name">${singleMatch.name}</div>
+                        <div class="chat-preview">${singleMatch.lastMessage}</div>
+                    </div>
+                </li>
+            `;
+        }
+
+        function switchNav(tab) {
+            document.getElementById('discoverView').style.display = tab === 'discover' ? 'flex' : 'none';
+            document.getElementById('chatsView').classList.toggle('active', tab === 'chats');
+            document.getElementById('profileView').classList.toggle('active', tab === 'profile');
+            document.getElementById('actionArea').style.display = tab === 'discover' ? 'flex' : 'none';
+
+            document.querySelectorAll('.nav-icon').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'chats') renderChats();
+            if (tab === 'profile') updateProfileView();
+        }
+
+        function updateProfileView() {
+            if (storyUnlocked) {
+                document.getElementById('storyLocked').style.display = 'none';
+                document.getElementById('storyUnlocked').classList.add('active');
+            }
+        }
+
+        function openChat(matchId) {
+            if (!singleMatch) return;
+
+            currentChatId = matchId;
+            document.getElementById('chatTitle').textContent = singleMatch.name;
+            document.getElementById('chatInput').value = '';
+            renderMessages();
+            document.getElementById('chatDetail').classList.add('active');
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messagesContainer');
+            
+            container.innerHTML = singleMatch.messages.map((msg, index) => {
+                if (msg.type === 'animation') {
+                    return `
+                        <div class="message-animation">
+                            <div class="animated-messages">
+                                <div class="animated-messages-scroll" id="msgScroll${index}"></div>
+                            </div>
+                        </div>
+                    `;
+                } else if (msg.type === 'proposal_buttons') {
+                    return `
+                        <div style="display:flex;justify-content:center;margin-top:10px;gap:10px;">
+                            <button class="yes-btn" style="padding:8px 16px;border-radius:20px;border:none;font-weight:600;cursor:pointer;background:#FF1493;color:white;" onclick="respondToProposal('yes')">Yes! 💍</button>
+                            <button class="no-btn" style="padding:8px 16px;border-radius:20px;border:none;font-weight:600;cursor:pointer;background:#ccc;color:#333;" onclick="respondToProposal('no')">No</button>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="message ${msg.sender}">
+                            <div class="message-bubble ${msg.proposal ? 'proposal' : ''}">${msg.text}</div>
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            singleMatch.messages.forEach((msg, index) => {
+                if (msg.type === 'animation') {
+                    const scrollDiv = document.getElementById(`msgScroll${index}`);
+                    if (scrollDiv) {
+                        scrollDiv.innerHTML = sampleMessages.map(m => `
+                            <div class="sample-message ${m.sender}">${m.text}</div>
+                        `).join('');
+                    }
+                }
+            });
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            
+            if (!input.value.trim()) return;
+
+            singleMatch.messages.push({
+                sender: 'own',
+                text: input.value
+            });
+
+            singleMatch.lastMessage = input.value;
+            input.value = '';
+            renderMessages();
+
+            setTimeout(() => {
+                let response = '';
+                const ownCount = singleMatch.messages.filter(m => m.sender === 'own' && m.type !== 'animation').length;
+                
+                if (ownCount === 1) {
+                    response = 'Hey! 😊 How are you?';
+                } else if (ownCount === 2) {
+                    response = 'I\'m doing great! How about you? What do you do?';
+                } else if (ownCount === 3) {
+                    response = 'That\'s awesome! Do you want to meet at NSP? 😊';
+                } else if (ownCount === 4) {
+                    response = 'Great! I\'ll see you there! 💕';
+                } else if (ownCount >= 5 && !proposalSent) {
+                    proposalSent = true;
+                    
+                    singleMatch.messages.push({
+                        type: 'animation'
+                    });
+                    renderMessages();
+                    
+                    setTimeout(() => {
+                        singleMatch.messages.push({
+                            sender: 'other',
+                            text: 'Will You Marry Me? 💍',
+                            proposal: true
+                        });
+                        singleMatch.messages.push({
+                            type: 'proposal_buttons'
+                        });
+                        renderMessages();
+                    }, 3500);
+                    
+                    localStorage.setItem('singleMatch', JSON.stringify(singleMatch));
+                    return;
+                }
+
+                if (response) {
+                    singleMatch.messages.push({
+                        sender: 'other',
+                        text: response
+                    });
+                    singleMatch.lastMessage = response;
+                    renderMessages();
+                }
+            }, 800);
+
+            localStorage.setItem('singleMatch', JSON.stringify(singleMatch));
+        }
+
+        function respondToProposal(response) {
+            singleMatch.messages = singleMatch.messages.filter(m => m.type !== 'proposal_buttons');
+            
+            if (response === 'yes') {
+                singleMatch.messages.push({
+                    sender: 'other',
+                    text: 'Yes! I will marry you! 💕💍✨',
+                    proposal: true
+                });
+                
+                storyUnlocked = true;
+                localStorage.setItem('storyUnlocked', 'true');
+                
+                renderMessages();
+                createConfetti();
+                
+                setTimeout(() => {
+                    singleMatch.messages.push({
+                        sender: 'other',
+                        text: 'Jodi date niklwalo! 🎉'
+                    });
+                    renderMessages();
+                    
+                    setTimeout(() => {
+                        closeChatDetail();
+                        
+                        document.getElementById('discoverView').style.display = 'none';
+                        document.getElementById('chatsView').classList.remove('active');
+                        document.getElementById('profileView').classList.add('active');
+                        document.getElementById('actionArea').style.display = 'none';
+                        
+                        document.querySelectorAll('.nav-icon').forEach(el => el.classList.remove('active'));
+                        document.querySelectorAll('.nav-icon')[2].classList.add('active');
+                        
+                        updateProfileView();
+                    }, 1500);
+                }, 800);
+            } else {
+                singleMatch.messages.push({
+                    sender: 'other',
+                    text: 'Okay, let\'s see where this goes 😊'
+                });
+                renderMessages();
+            }
+            
+            localStorage.setItem('singleMatch', JSON.stringify(singleMatch));
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.textContent = i % 3 === 0 ? '💕' : i % 3 === 1 ? '✨' : '💍';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.fontSize = Math.random() * 20 + 10 + 'px';
+                confetti.style.opacity = 1;
+                
+                document.body.appendChild(confetti);
+                
+                const duration = Math.random() * 3 + 2;
+                const xMove = (Math.random() - 0.5) * 200;
+                
+                confetti.animate([
+                    { transform: 'translateY(0) translateX(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight}px) translateX(${xMove}px) rotate(360deg)`, opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                }).onfinish = () => confetti.remove();
+            }
+        }
+
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function closeChatDetail() {
+            document.getElementById('chatDetail').classList.remove('active');
+        }
+
+        // Load existing match
+        const saved = localStorage.getItem('singleMatch');
+        if (saved) {
+            singleMatch = JSON.parse(saved);
+            currentChatId = singleMatch.id;
+        }
+
+        renderCard();
+        renderChats();
+    </script>
+</body>
+</html>

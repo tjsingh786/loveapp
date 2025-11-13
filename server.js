@@ -1,13 +1,13 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 
-// Serve static files from public folder
+// Serve static files
 app.use(express.static('public'));
 
-// ALSO serve img folder directly!
-app.use(express.static('.'));
-
+// Set EJS as view engine with absolute path
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 const profiles = [
     {
@@ -40,6 +40,19 @@ const profiles = [
     }
 ];
 
+const chats = [
+    {
+        id: 1,
+        name: 'Your Fiancé',
+        lastMessage: 'Missing you! 💕',
+        messages: [
+            { sender: 'other', text: 'Hey! How are you?' },
+            { sender: 'you', text: 'I\'m great! How are you?' },
+            { sender: 'other', text: 'Missing you! 💕' }
+        ]
+    }
+];
+
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
@@ -51,13 +64,13 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/app', (req, res) => {
-    res.render('bumble-exact', { profiles });
+    res.render('bumble-exact', { profiles, chats });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`💕 Bumble running at http://localhost:${PORT}`);  
-    console.log(`Login page: http://localhost:${PORT}/login`);     
+    console.log(`💕 Bumble running at http://localhost:${PORT}`);
+    console.log(`Login page: http://localhost:${PORT}/login`);
     console.log('');
     console.log('Credentials:');
     console.log('Username: Jahnavi555');
